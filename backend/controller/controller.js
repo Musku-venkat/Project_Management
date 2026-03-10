@@ -1,3 +1,5 @@
+const fs = require('fs');
+const csv = require('csv-parser');
 const { productModel } = require("../config/mongo");
 
 async function getData(req, res) {
@@ -23,8 +25,16 @@ async function postData(req, res) {
   try {
     const { name, sku, price, quantity, category } = req.body;
 
-    if (!name.trim(" ") || !sku.trim(" ") || !price || !quantity || !category) {
+    if (!name.trim() || !sku.trim() || !price || !quantity || !category) {
       return res.send({ success: false, message: "Fields Cannot be empty" });
+    }
+
+    if(price <= 0 || quantity <= 0){
+      return res.send({success: false, message: 'Price & Quantity should be greater than zero'});
+    }
+
+    if(category === 'Select'){
+      return res.send({success: false, message: 'Select a category'});
     }
 
     const data = await productModel.create({
@@ -61,4 +71,26 @@ async function deleteData(req, res) {
   }
 }
 
-module.exports = { getData, getDataById, postData, updateData, deleteData };
+async function postCsvData(req, res) {
+  const result = [];
+  try{
+    fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', (data)=> result.push(data))
+    .on('end', async ()=>{
+      try {
+        await productModel.insertMany(result);
+
+        fs.unlinkSync(req.file.path);
+
+        res.send({success: true, message: 'SCV Uploaded Successfully'});
+      } catch (error) {
+        res.send({success: false, message: error.message});
+      }
+    })
+  } catch(error){
+    res.send({success: false, message: error.messag});
+  }
+}
+
+module.exports = { getData, getDataById, postData, updateData, deleteData, postCsvData };
