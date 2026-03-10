@@ -1,8 +1,10 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function Csvupload(){
-    const [file, setFile] = useState();
+    const [file, setFile] = useState(null);
+    const navigate = useNavigate();
 
     async function handleUpload(){
         const formData = new FormData();
@@ -12,8 +14,10 @@ function Csvupload(){
         const {data} = await axios.post('http://localhost:4000/upload-csv', formData);
         if(data.success){
             alert('CSV Uploaded Successfully');
+            navigate('/');
+            setFile(null);
         }else{
-            alert(data.message);
+            alert(data.message, 1);
         }
     }
 

@@ -10,7 +10,11 @@ export function ContextProvider({children}){
 
     async function fetchData() {
         const {data} = await axios.get('http://localhost:4000/products');
-        setProducts(data.data);
+        if(data.success){
+            setProducts(data.data);
+        }else{
+            alert('Network Error');
+        }
     }
 
     async function deleteData(id) {
@@ -25,7 +29,7 @@ export function ContextProvider({children}){
 
     useEffect(()=>{
         fetchData();
-    });
+    }, []);
     return(
         <ProductContext.Provider value={{products, deleteData}}>
             {children}

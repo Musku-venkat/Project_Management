@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import Csvupload from "./Csvupload";
@@ -37,6 +37,7 @@ function Addproduct(){
 
     async function handleSubmit(e){
         e.preventDefault();
+
         try {
             if(id){
                 const {data} = await axios.put(`http://localhost:4000/update-products/${id}`, {name, sku, price, quantity, category});
@@ -71,7 +72,7 @@ function Addproduct(){
     return(
         <div className="rounded p-2 d-flex justify-content-center align-items-center shadow">
             <div>
-                <form onSubmit={handleSubmit} className="d-flex flex-column justify-content-center align-items-center gap-2 rounded shadow p-2 my-2">
+                <form onSubmit={handleSubmit} className="d-flex flex-column justify-content-center align-items-center gap-4 rounded shadow p-5 my-2">
                     <input type="text" className="form-control" placeholder="Product Name" onChange={(e)=>setName(e.target.value)} value={name} required/>
                     <input type="text" className="form-control" placeholder="Product SKU" onChange={(e)=>setSku(e.target.value)} value={sku} required/>
                     <input type="number" className="form-control" placeholder="Price" onChange={(e)=>setPrice(e.target.value)} value={price} required/>
